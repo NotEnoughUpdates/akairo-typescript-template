@@ -10,24 +10,24 @@
 		"format": "yarn prettier --write .",
 		"start": "yarn build && node --trace-warnings -r source-map-support/register dist/index.js"
 	},
-	"author": "Tyman",
+	"author": "Tyman & IRONM00N",
 	"license": "MIT",
 	"devDependencies": {
-		"@types/node": "^14.14.31",
-		"@types/prettier": "^2",
-		"@typescript-eslint/eslint-plugin": "^4.25.0",
-		"@typescript-eslint/parser": "^4.25.0",
-		"discord-api-types": "^0.18.1",
-		"eslint": "^7.20.0",
+		"@types/node": "^16.11.2",
+		"@types/prettier": "^2.4.1",
+		"@typescript-eslint/eslint-plugin": "^5.1.0",
+		"@typescript-eslint/parser": "^5.1.0",
+		"discord-api-types": "0.23.1",
+		"eslint": "^8.0.1",
 		"eslint-config-prettier": "^8.3.0",
-		"prettier": "^2.3.0",
+		"prettier": "^2.4.1",
 		"rimraf": "^3.0.2",
-		"source-map-support": "^0.5.19",
-		"typescript": "^4.2.2"
+		"source-map-support": "^0.5.20",
+		"typescript": "^4.4.4"
 	},
 	"dependencies": {
-		"discord-akairo": "SkyblockDev/discord-akairo#59db80742b2bba62cdcfa5505b4522a7134e8e04",
-		"discord.js": "discordjs/discord.js#f7643f7bbe64003ad8b221006190dd15529651e9"
+		"discord-akairo": "npm:@notenoughupdates/discord-akairo@dev",
+		"discord.js": "npm:@notenoughupdates/discord.js@dev"
 	},
 	"prettier": {
 		"useTabs": true,

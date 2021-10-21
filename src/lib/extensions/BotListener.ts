@@ -2,5 +2,5 @@ import { Listener } from 'discord-akairo';
 import { BotClient } from './BotClient';
 
 export class BotListener extends Listener {
-	public client = super.client as BotClient;
+	public declare client: BotClient;
 }

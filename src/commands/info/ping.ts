@@ -1,7 +1,7 @@
-import { CommandInteraction } from 'discord.js';
 import { Message } from 'discord.js';
 import { MessageEmbed } from 'discord.js';
 import { BotCommand } from '../../lib/extensions/BotCommand';
+import { AkairoMessage } from 'discord-akairo';
 
 export default class PingCommand extends BotCommand {
 	constructor() {
@@ -18,7 +18,7 @@ export default class PingCommand extends BotCommand {
 
 	public async exec(message: Message): Promise<void> {
 		const sentMessage = await message.util.send('Pong!');
-		const timestamp: number = message.editedTimestamp
+		const timestamp = message.editedTimestamp
 			? message.editedTimestamp
 			: message.createdTimestamp;
 		const botLatency = `\`\`\`\n ${Math.floor(
@@ -38,14 +38,14 @@ export default class PingCommand extends BotCommand {
 			.setTimestamp();
 		await sentMessage.edit({
 			content: null,
-			embed
+			embeds: [embed]
 		});
 	}
 
-	public async execSlash(message: CommandInteraction): Promise<void> {
+	public async execSlash(message: AkairoMessage): Promise<void> {
 		const timestamp1 = message.createdTimestamp;
 		await message.reply('Pong!');
-		const timestamp2 = await message
+		const timestamp2 = await message.interaction
 			.fetchReply()
 			.then((m) => (m as Message).createdTimestamp);
 		const botLatency = `\`\`\`\n ${Math.floor(
@@ -57,11 +57,11 @@ export default class PingCommand extends BotCommand {
 			.addField('Bot Latency', botLatency, true)
 			.addField('API Latency', apiLatency, true)
 			.setFooter(
-				message.user.username,
-				message.user.displayAvatarURL({ dynamic: true })
+				message.interaction.user.username,
+				message.interaction.user.displayAvatarURL({ dynamic: true })
 			)
 			.setTimestamp();
-		await message.editReply({
+		await message.interaction.editReply({
 			content: null,
 			embeds: [embed]
 		});

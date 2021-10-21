@@ -2,7 +2,8 @@ import {
 	AkairoClient,
 	CommandHandler,
 	InhibitorHandler,
-	ListenerHandler
+	ListenerHandler,
+	TaskHandler
 } from 'discord-akairo';
 import { Intents } from 'discord.js';
 import { join } from 'path';
@@ -13,7 +14,7 @@ export interface BotConfig {
 
 export class BotClient extends AkairoClient {
 	public config: BotConfig;
-	public commandHandler: CommandHandler = new CommandHandler(this, {
+	public commandHandler = new CommandHandler(this, {
 		prefix: '-',
 		commandUtil: true,
 		handleEdits: true,
@@ -21,29 +22,41 @@ export class BotClient extends AkairoClient {
 		allowMention: true,
 		automateCategories: true
 	});
-	public listenerHandler: ListenerHandler = new ListenerHandler(this, {
+	public listenerHandler = new ListenerHandler(this, {
 		directory: join(__dirname, '..', '..', 'listeners'),
 		automateCategories: true
 	});
-	public inhibitorHandler: InhibitorHandler = new InhibitorHandler(this, {
-		directory: join(__dirname, '..', '..', 'inhibitors')
+	public inhibitorHandler = new InhibitorHandler(this, {
+		directory: join(__dirname, '..', '..', 'inhibitors'),
+		automateCategories: true
+	});
+	public taskHandler = new TaskHandler(this, {
+		directory: join(__dirname, '..', '..', 'tasks'),
+		automateCategories: true
 	});
 	public constructor(config: BotConfig) {
-		super(
-			{
-				ownerID: ['id here'],
-				intents: Intents.NON_PRIVILEGED
-			},
-			{
-				allowedMentions: {
-					parse: ['users'] // Disables all mentions except for users
-				},
-				intents: Intents.NON_PRIVILEGED
-			}
-		);
+		super({
+			ownerID: ['id here'],
+			intents: [
+				Intents.FLAGS.DIRECT_MESSAGES,
+				Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+				Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+				Intents.FLAGS.GUILDS,
+				Intents.FLAGS.GUILD_BANS,
+				Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+				Intents.FLAGS.GUILD_INTEGRATIONS,
+				Intents.FLAGS.GUILD_INVITES,
+				Intents.FLAGS.GUILD_MESSAGES,
+				Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+				Intents.FLAGS.GUILD_MESSAGE_TYPING,
+				Intents.FLAGS.GUILD_VOICE_STATES,
+				Intents.FLAGS.GUILD_WEBHOOKS
+			],
+			allowedMentions: { parse: ['users'] } // Disables all mentions except for users
+		});
 		this.config = config;
 	}
-	private async _init(): Promise<void> {
+	async #init(): Promise<void> {
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
 		this.listenerHandler.setEmitters({
@@ -55,9 +68,10 @@ export class BotClient extends AkairoClient {
 		const loaders = {
 			commands: this.commandHandler,
 			listeners: this.listenerHandler,
-			inhibitors: this.inhibitorHandler
+			inhibitors: this.inhibitorHandler,
+			tasks: this.taskHandler
 		};
-		for (const loader of Object.keys(loaders)) {
+		for (const loader in loaders) {
 			try {
 				loaders[loader].loadAll();
 				console.log('Successfully loaded ' + loader + '.');
@@ -68,7 +82,7 @@ export class BotClient extends AkairoClient {
 	}
 
 	public async start(): Promise<string> {
-		await this._init();
+		await this.#init();
 
 		return this.login(this.config.token);
 	}
